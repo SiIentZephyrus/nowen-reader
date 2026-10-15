@@ -20,7 +20,7 @@ NowenReader 提供 5 种部署方式，按你的环境选择最适合的方案�
 
 ```bash
 # 下载配置文件
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.prod.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.prod.yml
 
 # 启动
 docker compose -f docker-compose.prod.yml up -d
@@ -43,7 +43,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 ```bash
 # 下载 NAS 专用配置
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.nas.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.nas.yml
 
 # 编辑配置，修改路径为 NAS 上的实际路径
 vi docker-compose.nas.yml
@@ -70,7 +70,7 @@ docker compose -f docker-compose.nas.yml up -d
 ## 方式 3：源码构建 Docker
 
 ```bash
-git clone https://github.com/cropflre/nowen-reader.git
+git clone https://github.com/SiIentZephyrus/nowen-reader.git
 cd nowen-reader
 
 # 一键构建并启动
@@ -88,7 +88,7 @@ docker compose up -d
 **前置条件**：Go 1.23+，Node.js 20+（可选，仅构建前端需要）
 
 ```bash
-git clone https://github.com/cropflre/nowen-reader.git
+git clone https://github.com/SiIentZephyrus/nowen-reader.git
 cd nowen-reader
 
 # 仅构建后端（API-only 模式，不含前端）
@@ -105,7 +105,7 @@ make build-full
 
 ## 方式 5：预编译二进制
 
-从 [GitHub Releases](https://github.com/cropflre/nowen-reader/releases) 下载对应平台的二进制文件，无需编译直接运行：
+从 [GitHub Releases](https://github.com/SiIentZephyrus/nowen-reader/releases) 下载对应平台的二进制文件，无需编译直接运行：
 
 | 平台 | 文件名 |
 |:---|:---|

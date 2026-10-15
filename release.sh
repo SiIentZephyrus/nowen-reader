@@ -21,7 +21,7 @@
 set -euo pipefail
 
 # -------------------- 配置 --------------------
-IMAGE_NAME="cropflre/nowen-reader"
+IMAGE_NAME="silentzephyrus/nowen-reader"
 DEFAULT_BRANCH="main"
 # 多架构平台：覆盖 x86_64 服务器 + ARM64 设备（OES / A311D / OECT / RK3566 等）
 DEFAULT_PLATFORMS="linux/amd64,linux/arm64"
@@ -689,7 +689,7 @@ OCI_LABELS=(
     --label "org.opencontainers.image.version=${VERSION_TAG}"
     --label "org.opencontainers.image.revision=${GIT_SHA}"
     --label "org.opencontainers.image.created=${BUILD_DATE}"
-    --label "org.opencontainers.image.source=https://github.com/cropflre/nowen-reader"
+    --label "org.opencontainers.image.source=https://github.com/SiIentZephyrus/nowen-reader"
     --label "org.opencontainers.image.title=nowen-reader"
     --label "org.opencontainers.image.description=nowen-reader release image (multi-arch: ${PLATFORMS})"
 )

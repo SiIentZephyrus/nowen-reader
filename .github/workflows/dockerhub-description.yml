@@ -30,6 +30,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: cropflre/nowen-reader
+          repository: silentzephyrus/nowen-reader
           short-description: 轻量自托管漫画与小说管理阅读平台，支持 Docker 和 NAS
           readme-filepath: ./DOCKERHUB.md

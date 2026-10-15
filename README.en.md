@@ -3,8 +3,8 @@
 <p align="center">
   <img src="https://img.shields.io/github/license/cropflre/nowen-reader?style=flat-square" alt="License" />
   <img src="https://img.shields.io/github/stars/cropflre/nowen-reader?style=flat-square" alt="Stars" />
-  <img src="https://img.shields.io/docker/pulls/cropflre/nowen-reader?style=flat-square" alt="Docker Pulls" />
-  <img src="https://img.shields.io/docker/image-size/cropflre/nowen-reader/latest?style=flat-square" alt="Image Size" />
+  <img src="https://img.shields.io/docker/pulls/silentzephyrus/nowen-reader?style=flat-square" alt="Docker Pulls" />
+  <img src="https://img.shields.io/docker/image-size/silentzephyrus/nowen-reader/latest?style=flat-square" alt="Image Size" />
   <img src="https://img.shields.io/badge/Go-1.23-00ADD8?style=flat-square&logo=go" alt="Go" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react" alt="React" />
 </p>
@@ -62,7 +62,7 @@ Three steps to a minimal deployment:
 
 ```bash
 # 1. Download the production compose file
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.prod.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.prod.yml
 
 # 2. Start the container
 docker compose -f docker-compose.prod.yml up -d

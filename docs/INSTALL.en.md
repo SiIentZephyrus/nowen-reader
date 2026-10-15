@@ -20,7 +20,7 @@ NowenReader provides 5 deployment methods. Choose the one that best fits your en
 
 ```bash
 # Download the compose file
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.prod.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.prod.yml
 
 # Start
 docker compose -f docker-compose.prod.yml up -d
@@ -43,7 +43,7 @@ docker compose -f docker-compose.prod.yml up -d
 
 ```bash
 # Download the NAS compose file
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.nas.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.nas.yml
 
 # Edit and adjust paths to match your NAS
 vi docker-compose.nas.yml
@@ -70,7 +70,7 @@ docker compose -f docker-compose.nas.yml up -d
 ## Method 3: Build from Source (Docker)
 
 ```bash
-git clone https://github.com/cropflre/nowen-reader.git
+git clone https://github.com/SiIentZephyrus/nowen-reader.git
 cd nowen-reader
 
 # One-click build and start
@@ -88,7 +88,7 @@ docker compose up -d
 **Prerequisites**: Go 1.23+, Node.js 20+ (optional, only required for frontend builds)
 
 ```bash
-git clone https://github.com/cropflre/nowen-reader.git
+git clone https://github.com/SiIentZephyrus/nowen-reader.git
 cd nowen-reader
 
 # Build backend only (API-only mode, no frontend)
@@ -105,7 +105,7 @@ make build-full
 
 ## Method 5: Pre-built Binaries
 
-Download the binary for your platform from [GitHub Releases](https://github.com/cropflre/nowen-reader/releases) — no compilation required:
+Download the binary for your platform from [GitHub Releases](https://github.com/SiIentZephyrus/nowen-reader/releases) — no compilation required:
 
 | Platform | Filename |
 |:---|:---|

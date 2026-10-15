@@ -17,7 +17,7 @@
 set -e
 
 # 配置
-IMAGE_NAME="${1:-cropflre/nowen-reader}"
+IMAGE_NAME="${1:-silentzephyrus/nowen-reader}"
 VERSION="${2:-latest}"
 PLATFORMS="linux/amd64,linux/arm64"
 BUILDER_NAME="nowen-multiplatform"

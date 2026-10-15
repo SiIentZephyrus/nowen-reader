@@ -1,17 +1,19 @@
 # NowenReader
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/cropflre/nowen-reader?style=flat-square)](https://hub.docker.com/r/cropflre/nowen-reader)
-[![Docker Image Size](https://img.shields.io/docker/image-size/cropflre/nowen-reader/latest?style=flat-square)](https://hub.docker.com/r/cropflre/nowen-reader/tags)
-[![GitHub Stars](https://img.shields.io/github/stars/cropflre/nowen-reader?style=flat-square)](https://github.com/cropflre/nowen-reader)
-[![License](https://img.shields.io/github/license/cropflre/nowen-reader?style=flat-square)](https://github.com/cropflre/nowen-reader/blob/main/LICENSE)
+此镜像由 [SiIentZephyrus/nowen-reader](https://github.com/SiIentZephyrus/nowen-reader) 构建，基于上游 [cropflre/nowen-reader](https://github.com/cropflre/nowen-reader)。
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/silentzephyrus/nowen-reader?style=flat-square)](https://hub.docker.com/r/silentzephyrus/nowen-reader)
+[![Docker Image Size](https://img.shields.io/docker/image-size/silentzephyrus/nowen-reader/latest?style=flat-square)](https://hub.docker.com/r/silentzephyrus/nowen-reader/tags)
+[![GitHub Stars](https://img.shields.io/github/stars/SiIentZephyrus/nowen-reader?style=flat-square)](https://github.com/SiIentZephyrus/nowen-reader)
+[![License](https://img.shields.io/github/license/SiIentZephyrus/nowen-reader?style=flat-square)](https://github.com/SiIentZephyrus/nowen-reader/blob/main/LICENSE)
 
 **高性能、轻量、NAS 友好的自托管漫画与小说管理阅读平台。**
 
 NowenReader 使用 Go 单二进制后端和内嵌 React 前端，默认采用 SQLite，无需额外数据库服务。镜像支持 `linux/amd64` 和 `linux/arm64`，适合群晖、威联通、绿联、铁威马、家庭服务器和普通 Linux 主机。
 
-- 项目主页：https://github.com/cropflre/nowen-reader
-- 完整文档：https://github.com/cropflre/nowen-reader/tree/main/docs
-- 问题反馈：https://github.com/cropflre/nowen-reader/issues
+- 项目主页：https://github.com/SiIentZephyrus/nowen-reader
+- 完整文档：https://github.com/SiIentZephyrus/nowen-reader/tree/main/docs
+- 问题反馈：https://github.com/SiIentZephyrus/nowen-reader/issues
 - QQ 交流群：`1093473044`
 
 ## 功能特性
@@ -38,7 +40,7 @@ NowenReader 使用 Go 单二进制后端和内嵌 React 前端，默认采用 SQ
 ### Docker Compose（推荐）
 
 ```bash
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.prod.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.prod.yml
 docker compose -f docker-compose.prod.yml up -d
 ```
 
@@ -55,7 +57,7 @@ http://localhost:6680
 ```yaml
 services:
   nowen-reader:
-    image: cropflre/nowen-reader:latest
+    image: silentzephyrus/nowen-reader:latest
     container_name: nowen-reader
     restart: unless-stopped
     ports:
@@ -102,7 +104,7 @@ docker run -d \
   -e DATA_DIR=/app/.cache \
   -e PORT=3000 \
   -e TZ=Asia/Shanghai \
-  cropflre/nowen-reader:latest
+  silentzephyrus/nowen-reader:latest
 ```
 
 ## 数据目录
@@ -121,7 +123,7 @@ docker run -d \
 下载 NAS 专用配置：
 
 ```bash
-curl -O https://raw.githubusercontent.com/cropflre/nowen-reader/main/docker-compose.nas.yml
+curl -O https://raw.githubusercontent.com/SiIentZephyrus/nowen-reader/main/docker-compose.nas.yml
 ```
 
 修改其中的宿主机目录后启动：
@@ -213,13 +215,13 @@ docker rm nowen-reader
 
 ## 更多文档
 
-- 安装指南：https://github.com/cropflre/nowen-reader/blob/main/docs/INSTALL.md
-- 配置说明：https://github.com/cropflre/nowen-reader/blob/main/docs/CONFIGURATION.md
-- API 文档：https://github.com/cropflre/nowen-reader/blob/main/docs/API.md
-- 常见问题：https://github.com/cropflre/nowen-reader/blob/main/docs/FAQ.md
-- 开发指南：https://github.com/cropflre/nowen-reader/blob/main/docs/DEVELOPMENT.md
-- Flutter 客户端：https://github.com/cropflre/nowen-reader/blob/main/flutter_app/README.md
+- 安装指南：https://github.com/SiIentZephyrus/nowen-reader/blob/main/docs/INSTALL.md
+- 配置说明：https://github.com/SiIentZephyrus/nowen-reader/blob/main/docs/CONFIGURATION.md
+- API 文档：https://github.com/SiIentZephyrus/nowen-reader/blob/main/docs/API.md
+- 常见问题：https://github.com/SiIentZephyrus/nowen-reader/blob/main/docs/FAQ.md
+- 开发指南：https://github.com/SiIentZephyrus/nowen-reader/blob/main/docs/DEVELOPMENT.md
+- Flutter 客户端：https://github.com/SiIentZephyrus/nowen-reader/blob/main/flutter_app/README.md
 
 ## 开源协议
 
-NowenReader 使用 [GNU General Public License v3.0](https://github.com/cropflre/nowen-reader/blob/main/LICENSE) 发布。
+NowenReader 使用 [GNU General Public License v3.0](https://github.com/SiIentZephyrus/nowen-reader/blob/main/LICENSE) 发布。

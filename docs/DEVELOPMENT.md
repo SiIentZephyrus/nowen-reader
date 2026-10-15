@@ -182,8 +182,27 @@ nowen-reader/
 
 项目使用 GitHub Actions 实现自动化：
 
-- **`build.yml`** — 代码推送/PR 触发测试；Tag 推送触发多平台二进制构建 + Docker 多架构推送 + GitHub Release
-- **`deploy.yml`** — main 分支推送触发 Docker 构建推送 + SSH 自动部署；Tag 推送触发多平台构建和 Release
+- **`docker.yml`** — `main` 推送或手动触发，构建 `linux/amd64`、`linux/arm64` 镜像，同时推送 Docker Hub 和 GHCR，生成 `latest` 和提交 SHA 标签。
+- **`flutter-ci.yml`** — Flutter 相关改动推送到 `main` 或提交 PR 时执行分析和测试；当前不生成 APK。
+- **`dockerhub-description.yml`** — 镜像说明文档变更或手动触发时，将 `DOCKERHUB.md` 同步到 Docker Hub。
+- **`build.yml` / `deploy.yml`** — 旧版手动发布工作流，目前仅配置 `workflow_dispatch`；发布任务仍有 `v*` Tag 条件限制。
+
+### 镜像发布配置
+
+Docker Hub 镜像名为 `silentzephyrus/nowen-reader`；GHCR 使用当前 GitHub 仓库所有者：`ghcr.io/<owner小写>/nowen-reader`。两处用户名分别配置。
+
+在 Fork 仓库启用 Actions，然后进入 **Settings → Secrets and variables → Actions** 添加：
+
+| Secret | 内容 |
+|:---|:---|
+| `DOCKERHUB_USERNAME` | 有权推送该镜像仓库的 Docker Hub 用户名 |
+| `DOCKERHUB_TOKEN` | Docker Hub Personal Access Token，镜像推送需要 Read & Write 权限 |
+
+`dockerhub-description.yml` 使用同一组凭据；该 README 同步 Action 要求 Token 具有 Read、Write、Delete 权限。
+
+提交并推送 `main` 后自动构建，也可在 Actions 中选择 **Build and Push Multi-Arch Image (Docker Hub + GHCR)**，点击 **Run workflow**。GHCR 使用自动提供的 `GITHUB_TOKEN` 和工作流声明的 `packages: write` 权限。
+
+镜像发布后，生产环境使用 `docker compose -f docker-compose.prod.yml pull` 和 `docker compose -f docker-compose.prod.yml up -d` 更新。
 
 ## 数据库迁移
 

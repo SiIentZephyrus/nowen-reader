@@ -14,7 +14,7 @@
 
 services:
   nowen-reader:
-    image: cropflre/nowen-reader:latest
+    image: silentzephyrus/nowen-reader:latest
     container_name: nowen-reader
     restart: unless-stopped
     ports:
