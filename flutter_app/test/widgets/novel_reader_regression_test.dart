@@ -21,9 +21,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 const _server = 'https://reader.example/nowen';
 
 class _ReaderApi extends ComicApi {
-  _ReaderApi({this.html = false, this.lastChapter = 999}) : super(Dio());
+  _ReaderApi({this.html = false, this.lastChapter = 999, this.content})
+      : super(Dio());
 
   final bool html;
+  final String? content;
   int lastChapter;
   String? lastReadAt;
   final requests = <int>[];
@@ -46,11 +48,12 @@ class _ReaderApi extends ComicApi {
   Map<String, dynamic> chapter(int index) => {
         'title': '第${index + 1}章',
         'mimeType': html ? 'text/html' : 'text/plain',
-        'content': List.generate(
-            100,
-            (i) => html
-                ? '<p>章节${index + 1}，第$i段正文。</p>'
-                : '章节${index + 1}，第$i段正文。').join('\n'),
+        'content': content ??
+            List.generate(
+                100,
+                (i) => html
+                    ? '<p>章节${index + 1}，第$i段正文。</p>'
+                    : '章节${index + 1}，第$i段正文。').join('\n'),
       };
 
   @override
@@ -109,7 +112,7 @@ NovelReadingPositionStore _store({String server = _server, String user = ''}) =>
     NovelReadingPositionStore(serverUrl: server, userId: user, comicId: 'book');
 
 Future<void> _mount(WidgetTester tester, _ReaderApi api,
-    {bool recent = false}) async {
+    {bool recent = false, TextScaler? textScaler, EdgeInsets? padding}) async {
   final client = ApiClient()..setBaseUrl(_server);
   await tester.pumpWidget(ProviderScope(
     overrides: [
@@ -117,9 +120,14 @@ Future<void> _mount(WidgetTester tester, _ReaderApi api,
       apiClientProvider.overrideWithValue(client),
     ],
     child: MaterialApp(
+        builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: textScaler, padding: padding),
+              child: child!,
+            ),
         home: Scaffold(
-      body: recent ? const ContinueReading() : const Text('首页'),
-    )),
+          body: recent ? const ContinueReading() : const Text('首页'),
+        )),
   ));
   if (recent) {
     // 首页的播放按钮持续呼吸，不能等待所有动画静止。
@@ -191,6 +199,149 @@ void main() {
       });
     }
   }
+
+  for (final html in [false, true]) {
+    for (final delayed in [false, true]) {
+      testWidgets(
+          '${html ? 'HTML' : 'text'} previous page crosses to the previous '
+          'chapter end (${delayed ? 'loading' : 'cached'})', (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(400, 800);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+        final api = _ReaderApi(html: html);
+        final pending = delayed ? Completer<Map<String, dynamic>>() : null;
+        if (pending != null) api.pendingChapters[0] = pending;
+        await _mount(tester, api);
+        await _open(tester, initialChapter: 1);
+
+        // Default left/right tap zones exercise the same navigation as Android.
+        await tester.tapAt(const Offset(30, 400));
+        if (pending != null) {
+          await tester.pump();
+          pending.complete(api.chapter(0));
+        }
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
+        final previous = (await _store().load())!;
+        expect(previous.chapter, 0);
+        expect(previous.totalPages, greaterThan(1));
+        expect(previous.page, previous.totalPages - 1);
+        expect(find.text('${previous.totalPages} / ${previous.totalPages}'),
+            findsOneWidget);
+        if (html) {
+          final scroll = tester
+              .widget<SingleChildScrollView>(
+                  find.byKey(const ValueKey('novel-html-pages')))
+              .controller!;
+          expect(scroll.offset, closeTo(scroll.position.maxScrollExtent, 1));
+        } else {
+          expect(
+              tester.widget<PageView>(find.byType(PageView)).controller!.page,
+              previous.totalPages - 1);
+        }
+
+        // The next page returns to chapter two's first page, and crossing back
+        // must still land at the chapter end after every deferred layout pass.
+        await tester.tapAt(const Offset(370, 400));
+        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 300));
+        final next = (await _store().load())!;
+        expect(next.chapter, 1);
+        expect(next.page, 0);
+        await tester.tapAt(const Offset(30, 400));
+        await tester.pumpAndSettle();
+        expect(find.text('${previous.totalPages} / ${previous.totalPages}'),
+            findsOneWidget);
+        await _cleanup(tester);
+      });
+    }
+  }
+
+  for (final scenario in [
+    (size: const Size(360, 640), scale: 1.0, scrollFooter: false),
+    (size: const Size(390, 844), scale: 1.8, scrollFooter: false),
+    (size: const Size(640, 360), scale: 1.5, scrollFooter: false),
+    (size: const Size(640, 360), scale: 2.0, scrollFooter: true),
+  ]) {
+    testWidgets(
+        'text pages stay readable ${scenario.size} at scale ${scenario.scale}',
+        (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = scenario.size;
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+      SharedPreferences.setMockInitialValues({
+        'novel_fontSize': 24.0,
+        'novel_lineHeight': 2.0,
+      });
+      final body = List.generate(50, (i) => '第$i句完整正文。').join();
+      await _mount(tester, _ReaderApi(content: body),
+          textScaler: TextScaler.linear(scenario.scale),
+          padding: const EdgeInsets.only(top: 24, bottom: 24));
+      await _open(tester, initialChapter: 1);
+      final view = tester.widget<PageView>(find.byType(PageView));
+      final count = view.childrenDelegate.estimatedChildCount!;
+      expect(count, greaterThan(1));
+      final texts = <String>[];
+      for (var page = 0; page < count; page++) {
+        view.controller!.jumpToPage(page);
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        final pageFinder = find.byKey(ValueKey('novel-text-page-1-$page'));
+        final scrollable = tester.state<ScrollableState>(find
+            .descendant(of: pageFinder, matching: find.byType(Scrollable))
+            .first);
+        if (scenario.scrollFooter && page == count - 1) {
+          // A single scaled line plus the controls cannot fit this landscape
+          // viewport. Both remain accessible instead of being clipped.
+          expect(scrollable.position.maxScrollExtent, greaterThan(0));
+          scrollable.position.jumpTo(scrollable.position.maxScrollExtent);
+          await tester.pumpAndSettle();
+          expect(tester.getRect(find.text('下一章')).bottom,
+              lessThanOrEqualTo(tester.getRect(pageFinder).bottom));
+        } else {
+          expect(scrollable.position.maxScrollExtent, lessThanOrEqualTo(1));
+        }
+        texts.addAll(tester
+            .widgetList<Text>(
+                find.descendant(of: pageFinder, matching: find.byType(Text)))
+            .where((text) => text.style?.fontSize == 24)
+            .map((text) => text.data!));
+      }
+      expect(texts.join(), '\u3000\u3000$body');
+      expect(find.text('下一章'), findsOneWidget);
+      await _cleanup(tester);
+    });
+  }
+
+  testWidgets('rotation and system text scaling reflow without losing position',
+      (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 640);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    await _mount(tester, _ReaderApi());
+    await _open(tester, initialChapter: 1);
+    for (var i = 0; i < 3; i++) {
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pumpAndSettle();
+    }
+    await tester.pump(const Duration(milliseconds: 300));
+    final before = (await _store().load())!;
+    tester.view.physicalSize = const Size(640, 360);
+    tester.platformDispatcher.textScaleFactorTestValue = 1.5;
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(tester.takeException(), isNull);
+    final after = (await _store().load())!;
+    expect(after.chapter, before.chapter);
+    expect(after.totalPages, isNot(before.totalPages));
+    expect(
+        after.ratio, closeTo(before.ratio, 1 / (after.totalPages - 1) + 0.01));
+    await _cleanup(tester);
+  });
 
   testWidgets('scroll position survives route disposal and immediate reopen',
       (tester) async {
